@@ -1,8 +1,8 @@
 <template>
   <svg
     class="NuxtLogo"
-    width="245"
-    height="180"
+    :width="245 / 4"
+    :height="180 / 4"
     viewBox="0 0 452 342"
     xmlns="http://www.w3.org/2000/svg"
   >
@@ -21,10 +21,11 @@
   </svg>
 </template>
 
-<style>
+<style scoped>
 .NuxtLogo {
   animation: 1s appear;
-  margin: auto;
+  margin-top: 10px;
+  margin-right: 60px;
 }
 
 @keyframes appear {
