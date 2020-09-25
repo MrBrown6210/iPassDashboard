@@ -1,3 +1,8 @@
+const apiHost = process.env.BACKEND_URL || 'http://localhost:3030'
+const apiPort = process.env.BACKEND_PORT
+
+const apiUrl = apiPort ? apiHost + apiPort : apiHost
+
 export default {
   /*
    ** Nuxt rendering mode
@@ -62,7 +67,9 @@ export default {
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
-  axios: {},
+  axios: {
+    baseURL: apiUrl,
+  },
   /*
    ** Build configuration
    ** See https://nuxtjs.org/api/configuration-build/

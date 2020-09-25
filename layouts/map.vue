@@ -95,7 +95,40 @@ export default class Map extends Vue {
     const map: google.maps.Map = await this.$refs.mapRef.$mapPromise
 
     // console.log('map', map)
-    // map.data.loadGeoJson('gadm36_THA/gadm36_THA_1')
+    // map.data.loadGeoJson('/_content/gadm36_THA/gadm36_THA_1')
+    map.data.setStyle(function (feature) {
+      console.log(feature)
+      return {
+        fillColor: '#66AA00',
+        strokeWeight: 0.5,
+      }
+    })
+
+    map.data.addListener('click', (event: google.maps.Data.MouseEvent) => {
+      map.data.overrideStyle(event.feature, {
+        strokeWeight: 2,
+      })
+      const bounds = new google.maps.LatLngBounds()
+      event.feature
+        .getGeometry()
+        .forEachLatLng((latLng) => bounds.extend(latLng))
+      console.log(event.feature)
+      const province = event.feature.getProperty('NAME_1')
+      // this.infoWindow.setPosition(event.latLng)
+      this.infoWindow.setPosition(bounds.getCenter())
+      this.infoWindow.setContent(province)
+      this.infoWindow.open(map)
+      map.setCenter(bounds.getCenter())
+      map.fitBounds(bounds)
+
+      console.log(province)
+      this.loadSingleDistrictFromProvince(province, map)
+    })
+
+    map.data.addListener('mouseout', (event: google.maps.Data.MouseEvent) => {
+      map.data.revertStyle(event.feature)
+      this.infoWindow.close()
+    })
 
     const ComponentClass = Vue.extend(MapButton)
     const instance = new ComponentClass()
@@ -106,8 +139,15 @@ export default class Map extends Vue {
     // instance.$mount()
     // map.controls[google.maps.ControlPosition.LEFT_TOP].push(instance2.$el)
 
+    // this.addButtonToGoogleMap()
+    this.addFeaturesToMap(features, map)
+  }
+
+  addFeaturesToMap(features: any[], map: google.maps.Map) {
     features.forEach((feature) => {
-      const coordinates: any[] = feature.geometry.coordinates
+      if (!feature.geometry) return
+      if (feature.properties.NAME_1 !== 'Bangkok Metropolis') return
+      const coordinates: any[] = feature.geometry?.coordinates || []
       if (feature.geometry.type === 'Polygon') {
         coordinates.forEach((coordinate: any[]) => {
           const paths: google.maps.LatLng[] = []
@@ -118,7 +158,12 @@ export default class Map extends Vue {
             )
             paths.push(latlng)
           })
-          this.addPolygonFromPath(paths, feature.properties, map)
+          map.data.add({
+            geometry: new google.maps.Data.Polygon([paths]),
+            id: feature.properties.CC_2,
+            properties: feature.properties,
+          })
+          // this.addPolygonFromPath(paths, feature.properties, map)
         })
       } else {
         // let polygon: google.maps.Polygon | undefined
@@ -126,99 +171,89 @@ export default class Map extends Vue {
           coordinate.forEach((coords: any[]) => {
             const paths: any[] = []
             coords.forEach((coord: any[]) => {
-              const latlng = { lat: coord[1], lng: coord[0] }
+              const latlng: google.maps.LatLng = new google.maps.LatLng(
+                coord[1],
+                coord[0]
+              )
               paths.push(latlng)
             })
-            this.addPolygonFromPath(paths, feature.properties, map)
+            map.data.add({
+              geometry: new google.maps.Data.Polygon([paths]),
+              id: feature.properties.CC_2,
+              properties: feature.properties,
+            })
+            // this.addPolygonFromPath(paths, feature.properties, map)
           })
         })
       }
     })
-
-    // this.addButtonToGoogleMap()
   }
 
-  addPolygonFromPath(
-    paths: google.maps.LatLng[],
-    properties: any,
-    map: google.maps.Map
-  ) {
-    if (!paths) return
-    let color = '#66AA00'
-    const mock = this.mocksData.find((mock) => {
-      return (
-        (properties.CC_1 as string)?.startsWith(mock.id) ||
-        (properties.CC_2 as string)?.startsWith(mock.id)
-      )
-    })
-    if (mock) {
-      color = '#DDAA00'
-    }
-    const polygon = new google.maps.Polygon({
-      paths: [paths],
-      map,
-      strokeColor: '#660000',
-      strokeOpacity: 0.8,
-      strokeWeight: 0.5,
-      fillColor: color,
-      fillOpacity: 0.65,
-      clickable: true,
-    })
-
-    const bounds = new google.maps.LatLngBounds()
-    polygon.getPaths().forEach((path) => {
-      const points = path.getArray()
-      points.forEach((point) => {
-        bounds.extend(point)
-      })
-    })
-
-    polygon.addListener('click', (event) => {
-      console.log(properties)
-      this.infoWindow.setPosition({
-        lat: event.latLng.lat(),
-        lng: event.latLng.lng(),
-      })
-      this.infoWindow.setContent(properties.NAME_1)
-      this.infoWindow.open(map, polygon)
-      map.setCenter(bounds.getCenter())
-      map.fitBounds(bounds)
-    })
-
-    polygon.addListener('mouseout', () => {
-      this.infoWindow.close()
-    })
-    return polygon
+  async loadSingleDistrictFromProvince(province: string, map: google.maps.Map) {
+    // const x = await this.$content('gadm36_THA/gadm36_THA_1').fetch()
+    // const features: { geometry: any; properties: any; type: string }[] = x instanceof Array ? x.map(
+    //   (x) => x.features
+    // )
+    const features: any[] = []
+    const filtered = features.filter(
+      (feature) => feature.properties.NAME_1 === province
+    )
+    console.log(filtered)
+    this.addFeaturesToMap(filtered, map)
   }
 
-  findCenterOf(polygon: google.maps.Polygon) {
-    let x1 = 0
-    let x2 = 0
-    let y1 = 0
-    let y2 = 0
-    const paths = polygon.getPaths()
-    paths.forEach((path) => {
-      path.forEach((point) => {
-        const lat = point.lat()
-        const lng = point.lng()
-        if (lat <= x1) {
-          x1 = lat
-        }
-        if (lat >= x2) {
-          x2 = lat
-        }
-        if (lng <= y1) {
-          y1 = lng
-        }
-        if (lng >= y2) {
-          y2 = lng
-        }
-      })
-    })
-    const centerX = x1 - (x1 - x2)
-    const centerY = y1 - (y1 - y2)
-    return new google.maps.LatLng(centerX, centerY)
-  }
+  // addPolygonFromPath(
+  //   paths: google.maps.LatLng[],
+  //   properties: any,
+  //   map: google.maps.Map
+  // ) {
+  //   if (!paths) return
+  //   let color = '#66AA00'
+  //   const mock = this.mocksData.find((mock) => {
+  //     return (
+  //       (properties.CC_1 as string)?.startsWith(mock.id) ||
+  //       (properties.CC_2 as string)?.startsWith(mock.id)
+  //     )
+  //   })
+  //   if (mock) {
+  //     color = '#DDAA00'
+  //   }
+  //   const polygon = new google.maps.Polygon({
+  //     paths: [paths],
+  //     map,
+  //     strokeColor: '#660000',
+  //     strokeOpacity: 0.8,
+  //     strokeWeight: 0.5,
+  //     fillColor: color,
+  //     fillOpacity: 0.65,
+  //     clickable: true,
+  //   })
+
+  //   const bounds = new google.maps.LatLngBounds()
+  //   polygon.getPaths().forEach((path) => {
+  //     const points = path.getArray()
+  //     points.forEach((point) => {
+  //       bounds.extend(point)
+  //     })
+  //   })
+
+  //   polygon.addListener('click', (event) => {
+  //     console.log(properties)
+  //     this.infoWindow.setPosition({
+  //       lat: event.latLng.lat(),
+  //       lng: event.latLng.lng(),
+  //     })
+  //     this.infoWindow.setContent(properties.NAME_1)
+  //     this.infoWindow.open(map, polygon)
+  //     map.setCenter(bounds.getCenter())
+  //     map.fitBounds(bounds)
+  //   })
+
+  //   polygon.addListener('mouseout', () => {
+  //     this.infoWindow.close()
+  //   })
+  //   return polygon
+  // }
 }
 </script>
 

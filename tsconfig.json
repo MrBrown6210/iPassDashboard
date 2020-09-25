@@ -20,7 +20,8 @@
       "@nuxt/vue-app",
       "@nuxt/types",
       "googlemaps",
-      "@nuxt/content"
+      "@nuxt/content",
+      "@nuxtjs/axios"
     ]
   },
   "exclude": ["node_modules", ".nuxt", "dist"]
