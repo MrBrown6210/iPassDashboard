@@ -1,7 +1,7 @@
-const apiHost = process.env.BACKEND_URL || 'http://localhost:3030'
+const apiHost = process.env.BACKEND_URL || /* 'http://128.199.205.55:3030' */ 'http://localhost:3030'
 const apiPort = process.env.BACKEND_PORT
 
-const apiUrl = apiPort ? apiHost + apiPort : apiHost
+const apiUrl = apiPort ? `${apiHost}:${apiPort}` : apiHost
 
 export default {
   /*
@@ -14,6 +14,9 @@ export default {
    ** See https://nuxtjs.org/api/configuration-target
    */
   target: 'static',
+  server: {
+    host: '0.0.0.0'
+  },
   /*
    ** Headers of the page
    ** See https://nuxtjs.org/api/configuration-head

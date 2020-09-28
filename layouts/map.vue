@@ -43,6 +43,8 @@ import { gmapApi } from 'vue2-google-maps'
 import MapButton from '@/components/MapButton.vue'
 import Logo from '@/components/Logo.vue'
 
+/* eslint-disable no-undef */
+
 @Component({})
 export default class Map extends Vue {
   $refs!: {
@@ -190,16 +192,19 @@ export default class Map extends Vue {
   }
 
   async loadSingleDistrictFromProvince(province: string, map: google.maps.Map) {
-    // const x = await this.$content('gadm36_THA/gadm36_THA_1').fetch()
-    // const features: { geometry: any; properties: any; type: string }[] = x instanceof Array ? x.map(
+    const xx = await this.$content('gadm36_THA/gadm36_THA_1').fetch()
+    console.log(xx, province, map)
+    // if ((xx instanceof Array)) {
+    //   const features: { geometry: any; properties: any; type: string }[] = xx instanceof Array ? xx.map(
     //   (x) => x.features
     // )
-    const features: any[] = []
-    const filtered = features.filter(
-      (feature) => feature.properties.NAME_1 === province
-    )
-    console.log(filtered)
-    this.addFeaturesToMap(filtered, map)
+    // }
+    // const features: any[] = []
+    // const filtered = features.filter(
+    //   (feature) => feature.properties.NAME_1 === province
+    // )
+    // console.log(filtered)
+    // this.addFeaturesToMap(filtered, map)
   }
 
   // addPolygonFromPath(

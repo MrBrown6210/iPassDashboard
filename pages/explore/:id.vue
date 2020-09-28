@@ -57,7 +57,7 @@
 import { Vue, Component } from 'nuxt-property-decorator'
 
 @Component({})
-export default class Test extends Vue {
+export default class ExploreID extends Vue {
   journals = []
   placeTracks = []
   personTracks = []
