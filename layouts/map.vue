@@ -23,6 +23,9 @@
             <b-nav-item active-class="nav-active" to="/graph">Graph</b-nav-item>
             <b-nav-item active-class="nav-active">Cases</b-nav-item>
             <b-nav-item active-class="nav-active">Death Rate</b-nav-item>
+            <b-nav-item active-class="nav-active" to="/explore">
+              Explore
+            </b-nav-item>
           </b-nav>
         </b-col>
         <b-col cols="12" style="height: 90vh">

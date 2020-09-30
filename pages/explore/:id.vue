@@ -1,38 +1,77 @@
 <template>
   <div class="p-2">
+    <nuxt-link to="/explore">Back</nuxt-link>
     <h1>
-      <b-badge pill variant="danger">{{ $route.params.id }} ติดเชื้อ</b-badge>
+      <b-badge pill variant="danger">
+        <span v-if="own">{{ own.name }}</span>
+        {{ $route.params.id }} ติดเชื้อ</b-badge
+      >
     </h1>
-    <div class="border border-info rounded p-2 m-2">
+    <div :key="update" class="border border-info rounded p-2 m-2">
       <div>การเดินทาง</div>
-      <ul v-for="(journal, date) in journals" :key="journal._id">
-        วันที่
-        {{
-          date
-        }}
-        <ol v-for="log in journal" :key="log._id">
-          <div>
-            <span>
-              <b>{{ log.name }}</b>
-            </span>
-            เวลา
-            {{
-              new Date(log.leave_at * 1000 - log.stay)
-                .toTimeString()
-                .split('GMT')[0]
-            }}
-            -
-            {{ new Date(log.leave_at * 1000).toTimeString().split('GMT')[0] }}
+      <ul>
+        <li v-for="(journal, index) in journals" :key="journal.date">
+          <b style="cursor: pointer" @click="toggleDate(index)">
+            วันที่ {{ journal.date }} ({{ journal.children.length }} records)
+            [{{ journal.expanded ? '-' : '+' }}]
+          </b>
+          <div v-if="journal.expanded">
+            <ol
+              v-for="(child, indexChild) in journal.children"
+              :key="child._id"
+            >
+              <span>
+                {{ indexChild + 1 }}. <b>{{ child.name }}</b> ({{
+                  child.found
+                }})
+              </span>
+              เวลา
+              {{
+                new Date(child.leave_at * 1000 - child.stay)
+                  .toTimeString()
+                  .split('GMT')[0]
+              }}
+              -
+              {{
+                new Date(child.leave_at * 1000).toTimeString().split('GMT')[0]
+              }}
+            </ol>
           </div>
-        </ol>
+        </li>
       </ul>
+      <!-- <ul v-for="(journal, date) in journals" :key="journal._id">
+        <b-button @click="toggleDate(date)">
+          วันที่
+          {{ date }}
+        </b-button>
+        <div>
+          <ol v-for="log in journal" :key="log._id">
+            <div>
+              <span>
+                <b>{{ log.name }}</b> ({{ log.found }})
+              </span>
+              เวลา
+              {{
+                new Date(log.leave_at * 1000 - log.stay)
+                  .toTimeString()
+                  .split('GMT')[0]
+              }}
+              -
+              {{ new Date(log.leave_at * 1000).toTimeString().split('GMT')[0] }}
+            </div>
+          </ol>
+          <div v-for="id in openings" :key="id">
+            {{ id }}
+          </div>
+        </div>
+      </ul> -->
     </div>
     <div class="border border-info rounded p-2 m-2">
       <div>สถานที่อันตราย</div>
       <ul>
         <div v-for="track in placeTracks" :key="track._id">
           <span>
-            <b>{{ track.place.name }}</b>
+            <b>{{ track.name }}</b> ({{ track._id }})
           </span>
           <b-badge :variant="alertPlaceColor[track.alert] || 'info'">
             {{ alertPlaceText[track.alert] }}
@@ -44,7 +83,7 @@
       <div>คนที่เสี่ยงติดเชื้อ</div>
       <ul>
         <div v-for="track in personTracks" :key="track._id">
-          <b>{{ track.id }}</b>
+          <b>{{ track.name }}</b> ({{ track._id }})
           <b-badge :variant="alertPlaceColor[track.alert] || 'info'">
             {{ alertPersonText[track.alert] }}
           </b-badge>
@@ -58,22 +97,48 @@ import { Vue, Component } from 'nuxt-property-decorator'
 
 @Component({})
 export default class ExploreID extends Vue {
-  journals = []
-  placeTracks = []
-  personTracks = []
+  journals: any[] = []
+  placeTracks: any[] = []
+  personTracks: any[] = []
+  openings: string[] = []
+  own: any = null
+  update = 0
   async mounted() {
-    const journals = await this.$axios.$get(
-      `/tracks/explore/${this.$route.params.id}`
-    )
-    const places = await this.$axios.$get(
+    const own = await this.$axios.$get(`/identities/${this.$route.params.id}`)
+    this.own = own
+    const places: any[] = await this.$axios.$get(
       `/tracks/explore/place/${this.$route.params.id}`
     )
-    const persons = await this.$axios.$get(
+    const persons: any[] = await this.$axios.$get(
       `/tracks/explore/person/${this.$route.params.id}`
     )
-    this.journals = journals
+
     this.placeTracks = places
     this.personTracks = persons
+
+    const journals: any = await this.$axios.$get(
+      `/tracks/explore/${this.$route.params.id}`
+    )
+
+    const journalls: any = []
+
+    for (const date in journals) {
+      console.log(date)
+      console.log(journals[date])
+      journalls.push({
+        date,
+        expanded: false,
+        children: journals[date],
+      })
+    }
+
+    console.log(journalls)
+
+    this.journals = journalls
+  }
+
+  toggleDate(index: number) {
+    this.journals[index].expanded = !this.journals[index].expanded
   }
 
   alertPlaceText = {
