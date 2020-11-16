@@ -123,7 +123,7 @@ export default class ExploreID extends Vue {
     const journalls: any = []
 
     for (const date in journals) {
-      console.log(date)
+      console.log(`date: ${date}`)
       console.log(journals[date])
       journalls.push({
         date,

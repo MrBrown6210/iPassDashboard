@@ -1,4 +1,8 @@
-const apiHost = process.env.BACKEND_URL || /* 'http://128.199.205.55:3030' */ 'http://localhost:3030'
+require('dotenv').config()
+
+const apiHost =
+  process.env.BACKEND_URL ||
+  /* 'http://128.199.205.55:3030' */ 'http://localhost:3030'
 const apiPort = process.env.BACKEND_PORT
 
 const apiUrl = apiPort ? `${apiHost}:${apiPort}` : apiHost
@@ -15,7 +19,7 @@ export default {
    */
   target: 'static',
   server: {
-    host: '0.0.0.0'
+    host: '0.0.0.0',
   },
   /*
    ** Headers of the page
