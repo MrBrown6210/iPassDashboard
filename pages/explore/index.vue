@@ -2,7 +2,14 @@
   <div class="p-5">
     <b-table striped hover :items="items" :fields="fields">
       <template v-slot:cell(show_details)="row">
-        <b-button size="sm" class="mr-2" @click="go(row.item)"> View </b-button>
+        <b-button
+          v-if="row.item._id !== row.item.name"
+          size="sm"
+          class="mr-2"
+          @click="go(row.item)"
+        >
+          View
+        </b-button>
       </template>
     </b-table>
   </div>
@@ -41,6 +48,10 @@ export default class Explore extends Vue {
   items = []
 
   go(item: any) {
+    if (item._id === item.name) {
+      console.log('User not found')
+      return
+    }
     this.$router.push(`/explore/${item._id}`)
     console.log(item)
   }

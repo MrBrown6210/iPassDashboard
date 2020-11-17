@@ -87,6 +87,15 @@
           <b-badge :variant="alertPlaceColor[track.alert] || 'info'">
             {{ alertPersonText[track.alert] }}
           </b-badge>
+          <b-btn
+            v-if="track.email"
+            class="m-2"
+            variant="outline-danger"
+            size="sm"
+            @click="alertUser(track._id)"
+          >
+            Alert user
+          </b-btn>
         </div>
       </ul>
     </div>
@@ -97,6 +106,7 @@ import { Vue, Component } from 'nuxt-property-decorator'
 
 @Component({})
 export default class ExploreID extends Vue {
+  [x: string]: any
   journals: any[] = []
   placeTracks: any[] = []
   personTracks: any[] = []
@@ -113,6 +123,11 @@ export default class ExploreID extends Vue {
       `/tracks/explore/person/${this.$route.params.id}`
     )
 
+    console.group('debug')
+    console.log('persons')
+    console.log(persons)
+    console.groupEnd()
+
     this.placeTracks = places
     this.personTracks = persons
 
@@ -123,8 +138,6 @@ export default class ExploreID extends Vue {
     const journalls: any = []
 
     for (const date in journals) {
-      console.log(`date: ${date}`)
-      console.log(journals[date])
       journalls.push({
         date,
         expanded: false,
@@ -132,9 +145,16 @@ export default class ExploreID extends Vue {
       })
     }
 
-    console.log(journalls)
-
     this.journals = journalls
+  }
+
+  alertUser(id: string) {
+    this.$axios.$post(`/identities/${id}/notification`)
+    this.$bvToast.toast('Already sent email to user', {
+      title: 'Sent Email!',
+      variant: 'info',
+      solid: true,
+    })
   }
 
   toggleDate(index: number) {

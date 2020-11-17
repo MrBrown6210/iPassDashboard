@@ -1,18 +1,15 @@
 <template>
   <div>
     <b-container>
-      <b-row
-        class="bg-danger no-gutters"
-        style="min-height: 100vh; min-width: 50vw"
-      >
-        <gmap-map
+      <b-row class="no-gutters" style="min-height: 100vh; min-width: 50vw">
+        <!-- <gmap-map
           ref="mapRef"
           :center="{ lat: 13, lng: 100 }"
           :zoom="5"
           style="width: 100%"
         >
-          <!-- <gmap-polygon :paths="paths"></gmap-polygon> -->
-        </gmap-map>
+          <gmap-polygon :paths="paths"></gmap-polygon>
+        </gmap-map> -->
       </b-row>
       <b-row class="no-gutters" style="min-width: 50vw">
         <b-col cols="12" align-self="start">
