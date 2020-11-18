@@ -29,9 +29,19 @@ export default class Explore extends Vue {
       label: 'ID',
       sortable: true,
     },
+    // {
+    //   key: 'found_count',
+    //   label: 'จำนวนที่ไปสัมผัสผู้คน',
+    //   sortable: true,
+    // },
     {
-      key: 'found_count',
+      key: 'found_count_people',
       label: 'จำนวนที่ไปสัมผัสผู้คน',
+      sortable: true,
+    },
+    {
+      key: 'found_count_places',
+      label: 'จำนวนที่ไปสัมผัสสิ่งก่อสร้าง',
       sortable: true,
     },
     {
