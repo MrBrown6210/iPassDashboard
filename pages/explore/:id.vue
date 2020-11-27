@@ -137,23 +137,9 @@ export default class ExploreID extends Vue {
 
     const journalls: any = []
 
-    // for fix offset
-    // const offsetToFirstDecember2020 = 1606780800
-
     for (const date in journals) {
-      console.log(date)
-      // START --- Add Offset
-      // const timestamp = new Date(date).getTime()
-      // console.log('timestamp', timestamp)
-      // const offsetDate = new Date(timestamp + offsetToFirstDecember2020 * 1000)
-      // const offsetStr = `${offsetDate.getDate()}/${
-      //   offsetDate.getMonth() + 1
-      // }/${offsetDate.getFullYear()}`
-      // console.log(offsetStr)
-      // END --- Add Offset
       journalls.push({
         date,
-        // date: offsetStr,
         expanded: false,
         children: journals[date],
       })
