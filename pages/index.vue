@@ -47,9 +47,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-
-export default Vue.extend({
-  layout: 'map',
+import { Vue, Component } from 'nuxt-property-decorator'
+@Component({
+  // layout: 'map',
 })
+export default class Example extends Vue {
+  created() {
+    this.$router.push('/explore')
+  }
+}
 </script>

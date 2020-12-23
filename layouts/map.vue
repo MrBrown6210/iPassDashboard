@@ -1,18 +1,15 @@
 <template>
   <div>
     <b-container>
-      <b-row
-        class="bg-danger no-gutters"
-        style="min-height: 100vh; min-width: 50vw"
-      >
-        <gmap-map
+      <b-row class="no-gutters" style="min-height: 100vh; min-width: 50vw">
+        <!-- <gmap-map
           ref="mapRef"
           :center="{ lat: 13, lng: 100 }"
           :zoom="5"
           style="width: 100%"
         >
-          <!-- <gmap-polygon :paths="paths"></gmap-polygon> -->
-        </gmap-map>
+          <gmap-polygon :paths="paths"></gmap-polygon>
+        </gmap-map> -->
       </b-row>
       <b-row class="no-gutters" style="min-width: 50vw">
         <b-col cols="12" align-self="start">
@@ -23,6 +20,9 @@
             <b-nav-item active-class="nav-active" to="/graph">Graph</b-nav-item>
             <b-nav-item active-class="nav-active">Cases</b-nav-item>
             <b-nav-item active-class="nav-active">Death Rate</b-nav-item>
+            <b-nav-item active-class="nav-active" to="/explore">
+              Explore
+            </b-nav-item>
           </b-nav>
         </b-col>
         <b-col cols="12" style="height: 90vh">
@@ -42,6 +42,8 @@ import { Vue, Component, Watch } from 'nuxt-property-decorator'
 import { gmapApi } from 'vue2-google-maps'
 import MapButton from '@/components/MapButton.vue'
 import Logo from '@/components/Logo.vue'
+
+/* eslint-disable no-undef */
 
 @Component({})
 export default class Map extends Vue {
@@ -190,16 +192,19 @@ export default class Map extends Vue {
   }
 
   async loadSingleDistrictFromProvince(province: string, map: google.maps.Map) {
-    // const x = await this.$content('gadm36_THA/gadm36_THA_1').fetch()
-    // const features: { geometry: any; properties: any; type: string }[] = x instanceof Array ? x.map(
+    const xx = await this.$content('gadm36_THA/gadm36_THA_1').fetch()
+    console.log(xx, province, map)
+    // if ((xx instanceof Array)) {
+    //   const features: { geometry: any; properties: any; type: string }[] = xx instanceof Array ? xx.map(
     //   (x) => x.features
     // )
-    const features: any[] = []
-    const filtered = features.filter(
-      (feature) => feature.properties.NAME_1 === province
-    )
-    console.log(filtered)
-    this.addFeaturesToMap(filtered, map)
+    // }
+    // const features: any[] = []
+    // const filtered = features.filter(
+    //   (feature) => feature.properties.NAME_1 === province
+    // )
+    // console.log(filtered)
+    // this.addFeaturesToMap(filtered, map)
   }
 
   // addPolygonFromPath(

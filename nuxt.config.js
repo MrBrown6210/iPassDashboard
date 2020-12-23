@@ -1,7 +1,6 @@
-const apiHost = process.env.BACKEND_URL || 'http://localhost:3030'
-const apiPort = process.env.BACKEND_PORT
+require('dotenv').config()
 
-const apiUrl = apiPort ? apiHost + apiPort : apiHost
+const apiHost = process.env.BACKEND_URL || 'http://localhost:3030'
 
 export default {
   /*
@@ -14,6 +13,9 @@ export default {
    ** See https://nuxtjs.org/api/configuration-target
    */
   target: 'static',
+  server: {
+    host: '0.0.0.0',
+  },
   /*
    ** Headers of the page
    ** See https://nuxtjs.org/api/configuration-head
@@ -68,7 +70,7 @@ export default {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    baseURL: apiUrl,
+    baseURL: apiHost,
   },
   /*
    ** Build configuration
